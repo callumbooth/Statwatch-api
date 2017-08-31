@@ -3,7 +3,7 @@ import mysql from 'mysql2';
 
 const Conn = new Sequelize(
 	'graphqldb',
-	'desktop',
+	'surface',
 	'69avcNnm',
 	{
 		dialect: 'mysql',
@@ -46,12 +46,8 @@ const User = Conn.define('user', {
 });
 
 //Teams table
-const Team = Conn.define('team', {
+const Teams = Conn.define('teams', {
 	name: {
-		type: Sequelize.STRING,
-		allowNull: false
-	},
-	gameId: {
 		type: Sequelize.STRING,
 		allowNull: false
 	},
@@ -176,30 +172,30 @@ const Results = Conn.define('results', {
 //Relationships
 
 //Users table
-User.hasMany(Team);
+User.hasMany(Teams);
 User.hasMany(TeamMembers);
 User.hasMany(Compositions);
 User.hasMany(Opponents);
 
 //Teams table
-Team.belongsTo(User);
-Team.hasMany(TeamMembers);
-Team.hasMany(Compositions);
-Team.hasMany(Opponents);
-Team.hasMany(Results);
+Teams.belongsTo(User);
+Teams.hasMany(TeamMembers);
+Teams.hasMany(Compositions);
+Teams.hasMany(Opponents);
+Teams.belongsTo(Games);
+Teams.hasMany(Results);
 
 //Team Members table
 TeamMembers.belongsTo(User);
-TeamMembers.belongsTo(Team);
+TeamMembers.belongsTo(Teams);
 
 //Compositions table
 Compositions.belongsTo(User);
-Compositions.belongsTo(Team);
+Compositions.belongsTo(Teams);
 
 
 //Games table
-Games.hasMany(Team);
-Games.hasMany(Team);
+Games.hasMany(Teams);
 Games.hasMany(Heros);
 Games.hasMany(Maps);
 
@@ -211,10 +207,10 @@ Maps.belongsTo(Games);
 
 //Opponents table
 Compositions.belongsTo(User);
-Compositions.belongsTo(Team);
+Compositions.belongsTo(Teams);
 
 //Results table
-Results.belongsTo(Team);
+Results.belongsTo(Teams);
 Results.belongsTo(Maps);
 Results.belongsTo(Opponents);
 

@@ -12,7 +12,7 @@ import DB from './db';
 const User = new GraphQLObjectType ({
 	name: 'User',
 	description: 'This is a user',
-	fields: function() {
+	fields: () => {
 		return {
 			id: {
 				type: GraphQLInt,
@@ -29,13 +29,13 @@ const User = new GraphQLObjectType ({
 			firstName: {
 				type: GraphQLString,
 				resolve(user) {
-					return user.firstname;
+					return user.firstName;
 				}
 			},
 			lastName: {
 				type: GraphQLString,
 				resolve(user) {
-					return user.lastname;
+					return user.lastName;
 				}
 			},
 			email: {
@@ -57,36 +57,36 @@ const User = new GraphQLObjectType ({
 const Team = new GraphQLObjectType ({
 	name: 'Team',
 	description: 'This is a team',
-	fields: function() {
+	fields: () => {
 		return {
 			id: {
 				type: GraphQLInt,
-				resolve(team) {
-					return team.id;
+				resolve(teams) {
+					return teams.id;
 				}
 			},
 			user: {
 				type: User,
-				resolve(team) {
-					return team.getUser();
+				resolve(teams) {
+					return teams.getUser();
 				}
 			},
 			name: {
 				type: GraphQLString,
-				resolve(team) {
-					return team.name;
+				resolve(teams) {
+					return teams.name;
 				}
 			},
-			gameId: {
-				type: GraphQLInt,
-				resolve(team) {
-					return team.gameId;
+			game: {
+				type: Game,
+				resolve(teams) {
+					return teams.getGame();
 				}
 			},
 			active: {
 				type: GraphQLInt,
-				resolve(team) {
-					return team.active;
+				resolve(teams) {
+					return teams.active;
 				}
 			}
 		};
@@ -191,8 +191,8 @@ const Game = new GraphQLObjectType({
 			},
 			name: {
 				type: GraphQLString,
-				resolve(game) {
-					return game.name;
+				resolve(games) {
+					return games.name;
 				}
 			}
 		};
@@ -522,10 +522,83 @@ const Mutation =  new GraphQLObjectType({
 						where: { id: args.id }
 					});
 				}
+			},
+			deleteUser: {
+				type: User,
+				args: {
+					id: {
+						type: new GraphQLNonNull(GraphQLInt)
+					}
+				},
+				resolve(_, args) {
+					return DB.models.user.destroy({
+						where: { id: args.id }
+					});
+				}
+			},
+			addTeam: {
+				type: Team,
+				args: {
+					name: {
+						type: new GraphQLNonNull(GraphQLString)
+					},
+					userId: {
+						type: new GraphQLNonNull(GraphQLInt)
+					},
+					gameId: {
+						type: new GraphQLNonNull(GraphQLInt)
+					}
+				},
+				resolve(_, args) {
+					return DB.models.teams.create({
+						name: args.name,
+						userId: args.userId,
+						gameId: args.gameId,
+						active: 1
+					});
+				}
+			},
+			updateTeam: {
+				type: Team,
+				args: {
+					id: {
+						type: new GraphQLNonNull(GraphQLInt)
+					},
+					name: {
+						type: new GraphQLNonNull(GraphQLString)
+					}
+				},
+				resolve(_, args) {
+					return DB.models.teams.update({
+						name: args.name
+					},
+					{
+						where: { id: args.id }
+					});
+				}
+			},
+			deleteTeam: {
+				type: Team,
+				args: {
+					id: {
+						type: new GraphQLNonNull(GraphQLInt)
+					}
+				},
+				resolve(_, args) {
+					return DB.models.teams.update({
+						active: 0
+					},
+					{
+						where: { id: args.id }
+					});
+				}
 			}
 		}
 	}
 })
+
+/*
+*/
 
 const Schema = new GraphQLSchema({
 	query: Query,
