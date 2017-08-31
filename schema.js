@@ -592,12 +592,29 @@ const Mutation =  new GraphQLObjectType({
 						where: { id: args.id }
 					});
 				}
-			}
+			},
+
 		}
 	}
 })
 
 /*
+TODO: 
+	- Teams
+		- permaDelete
+	- Team member
+		- Add
+		- edit
+		- delete
+		- permaDelete
+	- Compositions
+		- Add
+		- edit
+		- delete
+	- Games
+		- Add
+		- edit
+		- delete
 */
 
 const Schema = new GraphQLSchema({
