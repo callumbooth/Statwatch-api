@@ -593,7 +593,42 @@ const Mutation =  new GraphQLObjectType({
 					});
 				}
 			},
-
+			addTeamMember: {
+				type: TeamMember,
+				args: {
+					teamId: {
+						type: new GraphQLNonNull(GraphQLInt)
+					},
+					userId: {
+						type: new GraphQLNonNull(GraphQLInt)
+					},
+					role: {
+						type: new GraphQLNonNull(GraphQLString)
+					}
+				},
+				resolve(_, args) {
+					DB.models.team_members.count({
+						where: {
+							teamId: args.teamId,
+							userId: args.userId
+						}
+					}).then((response) => {
+						console.log("Number of rows: " + response);
+						if(response === 0) {
+							return DB.models.team_members.create({
+								teamId: args.teamId,
+								userId: args.userId,
+								role: args.role
+							})
+						} else {
+							console.log('Record already exists');
+						}
+					}).catch((error) => {
+						console.log("Error: " + error);
+					});
+					
+				}
+			}
 		}
 	}
 })
@@ -606,15 +641,41 @@ TODO:
 		- Add
 		- edit
 		- delete
-		- permaDelete
+		- permaDelete(team pd)
 	- Compositions
 		- Add
 		- edit
 		- delete
+		- permaDelete(team pd)
 	- Games
 		- Add
 		- edit
 		- delete
+		- permaDelete
+	- Heros 
+		- Add
+		- edit
+		- delete
+		- permaDelete(game pd)
+	- Maps
+		- add
+		- edit
+		- delete
+		- permaDelete(game pd)
+	- Opponents
+		- add
+		- edit
+		- delete
+		- permaDelete(team pd)
+	- Results
+		- add
+		- edit
+		- delete
+		- permaDelete(team pd)
+
+
+
+
 */
 
 const Schema = new GraphQLSchema({
